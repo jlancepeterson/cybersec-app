@@ -1,0 +1,392 @@
+.app-shell {
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, rgba(8, 15, 22, 0.96), rgba(15, 25, 35, 1)),
+    #07131b;
+  color: #e6f4ff;
+}
+
+.topbar {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 24px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.brand-mark {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 123, 67, 0.18);
+  border: 1px solid rgba(255, 123, 67, 0.38);
+  color: #ffb38a;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.nav-links a {
+  color: #a5c9d9;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: #f6fbff;
+}
+
+.content {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 30px;
+  align-items: center;
+  padding: 42px 0 30px;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  color: #7cd7ff;
+  font-weight: 700;
+}
+
+.hero-copy h1 {
+  margin: 0;
+  font-size: clamp(2.6rem, 5vw, 4.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.06em;
+}
+
+.lead {
+  margin-top: 20px;
+  max-width: 620px;
+  font-size: 1.08rem;
+  color: #c7dce9;
+}
+
+.cta-row {
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.primary-link,
+.secondary-link,
+.submit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.9rem 1.3rem;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primary-link,
+.submit-button {
+  background: linear-gradient(135deg, #63d0ff, #4b85ff);
+  color: #04171d;
+  box-shadow: 0 16px 40px rgba(90, 151, 255, 0.25);
+}
+
+.secondary-link {
+  border: 1px solid rgba(124, 215, 255, 0.4);
+  color: #e4f6ff;
+  background: rgba(9, 30, 37, 0.35);
+}
+
+.primary-link:hover,
+.secondary-link:hover,
+.submit-button:hover {
+  transform: translateY(-1px);
+}
+
+.mini-list {
+  list-style: none;
+  padding: 0;
+  margin: 28px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mini-list li {
+  background: rgba(123, 164, 187, 0.12);
+  border: 1px solid rgba(123, 164, 187, 0.22);
+  border-radius: 999px;
+  padding: 0.7rem 0.95rem;
+  color: #d8ebf9;
+}
+
+.email-card {
+  background: rgba(13, 33, 40, 0.88);
+  border: 1px solid rgba(117, 160, 175, 0.28);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 18px 55px rgba(2, 10, 14, 0.56);
+}
+
+.mail-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: #9dd6ee;
+}
+
+.email-card h2 {
+  margin: 18px 0 12px;
+  font-size: 1.7rem;
+  color: #f7fcff;
+}
+
+.email-card p,
+.email-card li {
+  color: #d2e8f4;
+  line-height: 1.6;
+}
+
+.email-card ul {
+  margin: 18px 0 0;
+  padding-left: 18px;
+}
+
+.section-block {
+  padding-top: 36px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+}
+
+.card-grid,
+.steps-grid,
+.tip-list {
+  display: grid;
+  gap: 18px;
+  margin-top: 26px;
+}
+
+.card-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.info-card,
+.step-card,
+.tip-item,
+.tip-form {
+  background: rgba(14, 29, 39, 0.9);
+  border: 1px solid rgba(124, 167, 184, 0.22);
+  border-radius: 20px;
+  box-shadow: 0 7px 22px rgba(4, 12, 18, 0.28);
+}
+
+.info-card {
+  padding: 22px 18px;
+}
+
+.tag {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  background: rgba(92, 203, 255, 0.14);
+  color: #9fe9ff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.info-card h3 {
+  margin: 18px 0 10px;
+  font-size: 1.3rem;
+}
+
+.info-card p {
+  margin: 0;
+  color: #cfe6f5;
+}
+
+.steps-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.step-card {
+  padding: 22px 18px 18px;
+}
+
+.step-number {
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 152, 73, 0.16);
+  color: #ffbd8d;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.step-card p {
+  margin: 0;
+  color: #dfeef8;
+  line-height: 1.7;
+}
+
+.share {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.share-copy p:last-child {
+  color: #c9dfe9;
+  line-height: 1.7;
+}
+
+.tip-form {
+  padding: 22px;
+  display: grid;
+  gap: 18px;
+}
+
+.tip-form label {
+  display: grid;
+  gap: 8px;
+  font-weight: 600;
+  color: #edf9ff;
+}
+
+.tip-form input,
+.tip-form select,
+.tip-form textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(128, 168, 188, 0.28);
+  background: rgba(10, 20, 31, 0.9);
+  color: #ebf9ff;
+  padding: 0.9rem 1rem;
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.tip-form textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.feedback {
+  margin: 0;
+  color: #8ae7ff;
+}
+
+.community {
+  padding-bottom: 30px;
+}
+
+.tip-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tip-item {
+  padding: 20px 18px;
+}
+
+.tip-item h3 {
+  margin: 16px 0 10px;
+  font-size: 1.35rem;
+}
+
+.tip-item p,
+.tip-item small {
+  color: #d2eaf9;
+  line-height: 1.7;
+}
+
+.tip-item strong {
+  display: block;
+  margin-top: 14px;
+  color: #9ad9ff;
+}
+
+.tip-item small {
+  display: block;
+  margin-top: 10px;
+  color: #8cc3d7;
+}
+
+.loading {
+  color: #d9ecf6;
+}
+
+@media (max-width: 900px) {
+  .hero,
+  .share,
+  .card-grid,
+  .steps-grid,
+  .tip-list {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .topbar {
+    padding-top: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .hero {
+    padding-top: 18px;
+  }
+
+  .cta-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .primary-link,
+  .secondary-link,
+  .submit-button {
+    width: 100%;
+  }
+}
