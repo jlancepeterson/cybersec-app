@@ -6,10 +6,20 @@ import { fileURLToPath } from 'node:url';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const isProduction = process.env.NODE_ENV === 'production';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const distPath = path.resolve(__dirname, '../dist');
+
+const MAX_TIPS = 200;
+const MAX_FIELD_LENGTH = 500;
+const ALLOWED_CATEGORIES = new Set([
+  'Urgent action',
+  'Spoofed sender',
+  'Credentials request',
+  'Unexpected attachment',
+]);
 
 const initialTips = [
   {
@@ -37,8 +47,18 @@ const initialTips = [
 
 const tips = [...initialTips];
 
-app.use(cors());
-app.use(express.json());
+// In production the frontend is served from this same Express server, so no
+// cross-origin access is needed by default. Set ALLOWED_ORIGIN to opt in a
+// specific origin if the frontend is ever hosted separately.
+const allowedOrigin = process.env.ALLOWED_ORIGIN;
+app.use(
+  cors(
+    isProduction
+      ? { origin: allowedOrigin ?? false, methods: ['GET', 'POST'] }
+      : { origin: true, methods: ['GET', 'POST'] },
+  ),
+);
+app.use(express.json({ limit: '10kb' }));
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', message: 'PhishSafe API is running.' });
@@ -55,16 +75,41 @@ app.post('/api/tips', (req, res) => {
     return res.status(400).json({ error: 'All fields are required.' });
   }
 
+  if (
+    typeof author !== 'string' ||
+    typeof category !== 'string' ||
+    typeof insight !== 'string' ||
+    typeof nextStep !== 'string'
+  ) {
+    return res.status(400).json({ error: 'All fields must be text.' });
+  }
+
+  if (
+    author.length > MAX_FIELD_LENGTH ||
+    insight.length > MAX_FIELD_LENGTH ||
+    nextStep.length > MAX_FIELD_LENGTH
+  ) {
+    return res.status(400).json({ error: `Fields must be ${MAX_FIELD_LENGTH} characters or fewer.` });
+  }
+
+  if (!ALLOWED_CATEGORIES.has(category)) {
+    return res.status(400).json({ error: 'Unrecognized risk pattern category.' });
+  }
+
   const tip = {
     id: Date.now(),
     title: `${category} warning`,
     category,
-    summary: insight,
-    nextStep,
-    author
+    summary: insight.trim(),
+    nextStep: nextStep.trim(),
+    author: author.trim(),
   };
 
   tips.unshift(tip);
+  if (tips.length > MAX_TIPS) {
+    tips.length = MAX_TIPS;
+  }
+
   return res.status(201).json({ tip });
 });
 
