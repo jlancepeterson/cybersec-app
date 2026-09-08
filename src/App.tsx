@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import './App.css'
+import { quizQuestions } from './quizData'
 
 type Tip = {
   id: number
@@ -66,6 +67,118 @@ const emptyForm = {
   category: 'Urgent action',
   insight: '',
   nextStep: '',
+}
+
+function QuizSection() {
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [score, setScore] = useState(0)
+  const [selected, setSelected] = useState<'phishing' | 'legitimate' | null>(null)
+  const [isFinished, setIsFinished] = useState(false)
+  const [hasStarted, setHasStarted] = useState(false)
+
+  const currentQuestion = quizQuestions[currentIndex]
+  const isCorrect = selected !== null && selected === currentQuestion.answer
+
+  const handleStart = () => {
+    setHasStarted(true)
+  }
+
+  const handleAnswer = (choice: 'phishing' | 'legitimate') => {
+    if (selected) return
+    setSelected(choice)
+    if (choice === currentQuestion.answer) {
+      setScore((current) => current + 1)
+    }
+  }
+
+  const handleNext = () => {
+    if (currentIndex + 1 < quizQuestions.length) {
+      setCurrentIndex((current) => current + 1)
+      setSelected(null)
+    } else {
+      setIsFinished(true)
+    }
+  }
+
+  const handleRestart = () => {
+    setCurrentIndex(0)
+    setScore(0)
+    setSelected(null)
+    setIsFinished(false)
+    setHasStarted(false)
+  }
+
+  if (!hasStarted) {
+    return (
+      <div className="quiz-card quiz-intro">
+        <p>
+          Put the warning signs to the test. You will see {quizQuestions.length} short emails —
+          decide if each one is phishing or legitimate.
+        </p>
+        <button type="button" className="primary-link" onClick={handleStart}>
+          Start the quiz
+        </button>
+      </div>
+    )
+  }
+
+  if (isFinished) {
+    const message =
+      score === quizQuestions.length
+        ? 'Perfect score! You caught every warning sign.'
+        : score >= Math.ceil(quizQuestions.length / 2)
+          ? 'Nice work! Review the signals above to sharpen the rest.'
+          : "Keep practicing — review the warning signs above and try again."
+
+    return (
+      <div className="quiz-card quiz-results">
+        <p className="quiz-score">
+          You scored {score} / {quizQuestions.length}
+        </p>
+        <p>{message}</p>
+        <button type="button" className="primary-link" onClick={handleRestart}>
+          Retake the quiz
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="quiz-card">
+      <div className="quiz-progress">
+        Question {currentIndex + 1} of {quizQuestions.length}
+      </div>
+
+      <div className="email-card quiz-email">
+        <div className="mail-topline">
+          <span>From</span>
+          <strong>{currentQuestion.sender}</strong>
+        </div>
+        <h2>{currentQuestion.subject}</h2>
+        <p>{currentQuestion.body}</p>
+      </div>
+
+      {selected === null ? (
+        <div className="quiz-answers">
+          <button type="button" className="secondary-link" onClick={() => handleAnswer('legitimate')}>
+            Legitimate
+          </button>
+          <button type="button" className="primary-link" onClick={() => handleAnswer('phishing')}>
+            Phishing
+          </button>
+        </div>
+      ) : (
+        <div className={`quiz-feedback ${isCorrect ? 'quiz-feedback-correct' : 'quiz-feedback-incorrect'}`}>
+          <p className="quiz-feedback-result">{isCorrect ? 'Correct!' : 'Not quite.'}</p>
+          <span className="tag">{currentQuestion.signal}</span>
+          <p>{currentQuestion.explanation}</p>
+          <button type="button" className="primary-link" onClick={handleNext}>
+            {currentIndex + 1 < quizQuestions.length ? 'Next question' : 'See results'}
+          </button>
+        </div>
+      )}
+    </div>
+  )
 }
 
 function App() {
@@ -146,6 +259,7 @@ function App() {
         <nav className="nav-links" aria-label="Main navigation">
           <a href="#signals">Warning signs</a>
           <a href="#workflow">Quick check</a>
+          <a href="#quiz">Take the quiz</a>
           <a href="#share">Share a tip</a>
         </nav>
       </header>
@@ -220,6 +334,14 @@ function App() {
               </div>
             ))}
           </div>
+        </section>
+
+        <section id="quiz" className="quiz section-block">
+          <div className="section-heading">
+            <p className="eyebrow">Test what you learned</p>
+            <h2>Can you spot the phishing email?</h2>
+          </div>
+          <QuizSection />
         </section>
 
         <section id="share" className="share section-block">
