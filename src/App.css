@@ -98,8 +98,7 @@
 }
 
 .primary-link,
-.secondary-link,
-.submit-button {
+.secondary-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -111,8 +110,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.primary-link,
-.submit-button {
+.primary-link {
   background: linear-gradient(135deg, #63d0ff, #4b85ff);
   color: #04171d;
   box-shadow: 0 16px 40px rgba(90, 151, 255, 0.25);
@@ -125,8 +123,7 @@
 }
 
 .primary-link:hover,
-.secondary-link:hover,
-.submit-button:hover {
+.secondary-link:hover {
   transform: translateY(-1px);
 }
 
@@ -203,8 +200,7 @@
 
 .info-card,
 .step-card,
-.tip-item,
-.tip-form {
+.tip-item {
   background: rgba(14, 29, 39, 0.9);
   border: 1px solid rgba(124, 167, 184, 0.22);
   border-radius: 20px;
@@ -262,54 +258,6 @@
   margin: 0;
   color: #dfeef8;
   line-height: 1.7;
-}
-
-.share {
-  display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  gap: 24px;
-  align-items: start;
-}
-
-.share-copy p:last-child {
-  color: #c9dfe9;
-  line-height: 1.7;
-}
-
-.tip-form {
-  padding: 22px;
-  display: grid;
-  gap: 18px;
-}
-
-.tip-form label {
-  display: grid;
-  gap: 8px;
-  font-weight: 600;
-  color: #edf9ff;
-}
-
-.tip-form input,
-.tip-form select,
-.tip-form textarea {
-  width: 100%;
-  border-radius: 12px;
-  border: 1px solid rgba(128, 168, 188, 0.28);
-  background: rgba(10, 20, 31, 0.9);
-  color: #ebf9ff;
-  padding: 0.9rem 1rem;
-  font: inherit;
-  box-sizing: border-box;
-}
-
-.tip-form textarea {
-  resize: vertical;
-  min-height: 110px;
-}
-
-.feedback {
-  margin: 0;
-  color: #8ae7ff;
 }
 
 .community {
@@ -436,7 +384,6 @@
 
 @media (max-width: 900px) {
   .hero,
-  .share,
   .card-grid,
   .steps-grid,
   .tip-list {
@@ -468,8 +415,7 @@
   }
 
   .primary-link,
-  .secondary-link,
-  .submit-button {
+  .secondary-link {
     width: 100%;
   }
 }

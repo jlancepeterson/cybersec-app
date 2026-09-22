@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import type { ChangeEvent, FormEvent } from 'react'
 import './App.css'
 import { quizQuestions } from './quizData'
 
@@ -61,13 +60,6 @@ const steps = [
   'Verify the request using a trusted company contact or official app.',
   'Report the message and delete it if it looks suspicious.',
 ]
-
-const emptyForm = {
-  author: '',
-  category: 'Urgent action',
-  insight: '',
-  nextStep: '',
-}
 
 function QuizSection() {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -183,8 +175,6 @@ function QuizSection() {
 
 function App() {
   const [tips, setTips] = useState<Tip[]>(starterTips)
-  const [form, setForm] = useState(emptyForm)
-  const [feedback, setFeedback] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -209,46 +199,6 @@ function App() {
     void loadTips()
   }, [])
 
-  const handleChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
-  ) => {
-    const { name, value } = event.target
-    setForm((current) => ({ ...current, [name]: value }))
-  }
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
-    if (!form.author.trim() || !form.insight.trim() || !form.nextStep.trim()) {
-      setFeedback('Please complete all fields before sharing your tip.')
-      return
-    }
-
-    try {
-      const response = await fetch('/api/tips', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error ?? 'Unable to add tip')
-      }
-
-      const newTip = data.tip
-      setTips((current) => [newTip, ...current])
-      setForm(emptyForm)
-      setFeedback('Thanks for sharing a practical phishing warning tip.')
-    } catch (error) {
-      console.error(error)
-      setFeedback('We could not save that tip right now, but your idea is still useful to review.')
-    }
-  }
-
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -260,7 +210,6 @@ function App() {
           <a href="#signals">Warning signs</a>
           <a href="#workflow">Quick check</a>
           <a href="#quiz">Take the quiz</a>
-          <a href="#share">Share a tip</a>
         </nav>
       </header>
 
@@ -276,9 +225,6 @@ function App() {
             <div className="cta-row">
               <a className="primary-link" href="#signals">
                 Check the signs
-              </a>
-              <a className="secondary-link" href="#share">
-                Share a step
               </a>
             </div>
             <ul className="mini-list">
@@ -342,68 +288,6 @@ function App() {
             <h2>Can you spot the phishing email?</h2>
           </div>
           <QuizSection />
-        </section>
-
-        <section id="share" className="share section-block">
-          <div className="share-copy">
-            <p className="eyebrow">Share a practical step</p>
-            <h2>Help others recognize phishing faster.</h2>
-            <p>
-              Use the form below to document a quick clue or a trusted verification routine that makes
-              suspicious emails easier to spot.
-            </p>
-          </div>
-
-          <form className="tip-form" onSubmit={handleSubmit}>
-            <label>
-              Your name
-              <input
-                type="text"
-                name="author"
-                value={form.author}
-                onChange={handleChange}
-                placeholder="Sam Rivera"
-              />
-            </label>
-
-            <label>
-              Risk pattern
-              <select name="category" value={form.category} onChange={handleChange}>
-                <option value="Urgent action">Urgent action</option>
-                <option value="Spoofed sender">Spoofed sender</option>
-                <option value="Credentials request">Credentials request</option>
-                <option value="Unexpected attachment">Unexpected attachment</option>
-              </select>
-            </label>
-
-            <label>
-              What makes this suspicious?
-              <textarea
-                name="insight"
-                value={form.insight}
-                onChange={handleChange}
-                rows={4}
-                placeholder="The email looked nearly identical to the real vendor but used a different domain and demanded immediate login."
-              />
-            </label>
-
-            <label>
-              Best next step
-              <textarea
-                name="nextStep"
-                value={form.nextStep}
-                onChange={handleChange}
-                rows={3}
-                placeholder="Open the official website from a bookmark and verify the request there instead of clicking the email link."
-              />
-            </label>
-
-            <button type="submit" className="submit-button">
-              Share warning tip
-            </button>
-
-            {feedback ? <p className="feedback">{feedback}</p> : null}
-          </form>
         </section>
 
         <section className="community section-block">
