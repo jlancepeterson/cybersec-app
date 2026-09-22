@@ -3,6 +3,7 @@ import type { ChangeEvent, FormEvent } from 'react'
 import './App.css'
 import { quizQuestions } from './quizData'
 import { simulatorEmails } from './simulatorData'
+import { SpotTheRedFlags } from './SpotTheRedFlags'
 
 type Tip = {
   id: number
@@ -421,6 +422,7 @@ function App() {
           <a href="#workflow">Quick check</a>
           <a href="#quiz">Take the quiz</a>
           <a href="#simulator">Phishing simulator</a>
+          <a href="#red-flags">Spot the Red Flags</a>
           <a href="#share">Share a tip</a>
         </nav>
       </header>
@@ -515,6 +517,19 @@ function App() {
             </p>
           </div>
           <PhishingSimulator />
+        </section>
+
+        <section id="red-flags" className="simulator section-block">
+          <div className="section-heading">
+            <p className="eyebrow">Advanced training</p>
+            <h2>Spot the Red Flags</h2>
+            <p className="lead">
+              Choose a difficulty level, then click directly on the parts of each email you believe are
+              suspicious. Find every red flag to complete the scenario — hints and reveals are available if
+              you get stuck.
+            </p>
+          </div>
+          <SpotTheRedFlags />
         </section>
 
         <section id="share" className="share section-block">
