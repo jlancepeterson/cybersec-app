@@ -434,6 +434,85 @@
   color: #f4fbff;
 }
 
+.quiz-progress-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.quiz-progress-score {
+  color: #ffbd8d;
+}
+
+.sim-email-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.sim-avatar {
+  flex-shrink: 0;
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  background: rgba(92, 203, 255, 0.16);
+  color: #9fe9ff;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.sim-sender-block {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sim-sender-block strong {
+  color: #f4fbff;
+  font-size: 1rem;
+}
+
+.sim-sender-address {
+  color: #8cc3d7;
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+
+.sim-timestamp {
+  margin-left: auto;
+  color: #8cc3d7;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.sim-link,
+.sim-attachment {
+  margin-top: 16px;
+  border-radius: 12px;
+  border: 1px dashed rgba(124, 167, 184, 0.35);
+  background: rgba(10, 20, 31, 0.6);
+  padding: 10px 14px;
+  color: #9fe9ff;
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+
+.sim-attachment {
+  color: #ffbd8d;
+}
+
+.sim-indicator-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 @media (max-width: 900px) {
   .hero,
   .share,
