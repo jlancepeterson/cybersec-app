@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { quizQuestions } from './quizData'
+import { simulatorEmails } from './simulatorData'
+import { SpotTheRedFlags } from './SpotTheRedFlags'
 
 type Tip = {
   id: number
@@ -173,6 +175,165 @@ function QuizSection() {
   )
 }
 
+function initials(name: string) {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('')
+}
+
+function PhishingSimulator() {
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [score, setScore] = useState(0)
+  const [selected, setSelected] = useState<'phishing' | 'legitimate' | null>(null)
+  const [isFinished, setIsFinished] = useState(false)
+  const [hasStarted, setHasStarted] = useState(false)
+
+  const total = simulatorEmails.length
+  const currentEmail = simulatorEmails[currentIndex]
+  const correctAnswer: 'phishing' | 'legitimate' = currentEmail.isPhishing ? 'phishing' : 'legitimate'
+  const isCorrect = selected !== null && selected === correctAnswer
+
+  const handleStart = () => {
+    setHasStarted(true)
+  }
+
+  const handleAnswer = (choice: 'phishing' | 'legitimate') => {
+    if (selected) return
+    setSelected(choice)
+    if (choice === correctAnswer) {
+      setScore((current) => current + 1)
+    }
+  }
+
+  const handleNext = () => {
+    if (currentIndex + 1 < total) {
+      setCurrentIndex((current) => current + 1)
+      setSelected(null)
+    } else {
+      setIsFinished(true)
+    }
+  }
+
+  const handleRestart = () => {
+    setCurrentIndex(0)
+    setScore(0)
+    setSelected(null)
+    setIsFinished(false)
+    setHasStarted(false)
+  }
+
+  if (!hasStarted) {
+    return (
+      <div className="quiz-card quiz-intro">
+        <p>
+          Step into an inbox and decide, message by message, whether each of these {total} emails is
+          phishing or legitimate. Early messages are easier to spot — later ones are written to be
+          genuinely convincing.
+        </p>
+        <button type="button" className="primary-link" onClick={handleStart}>
+          Start the simulation
+        </button>
+      </div>
+    )
+  }
+
+  if (isFinished) {
+    const percentage = Math.round((score / total) * 100)
+    const message =
+      percentage === 100
+        ? 'Outstanding! You caught every phishing attempt and correctly trusted every legitimate email.'
+        : percentage >= 80
+          ? 'Great instincts — you spotted most of the warning signs. Review any misses above and try again.'
+          : percentage >= 50
+            ? 'Good start. Revisit the warning signs and workflow sections above, then give it another attempt.'
+            : 'This is exactly why awareness training matters. Review the warning signs above and try the simulation again.'
+
+    return (
+      <div className="quiz-card quiz-results">
+        <p className="quiz-score">
+          You scored {score} / {total} ({percentage}%)
+        </p>
+        <p>{message}</p>
+        <button type="button" className="primary-link" onClick={handleRestart}>
+          Try again
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="quiz-card simulator-card">
+      <div className="quiz-progress-row">
+        <span className="quiz-progress">
+          Email {currentIndex + 1} of {total}
+        </span>
+        <span className="quiz-progress quiz-progress-score">Score: {score}</span>
+      </div>
+
+      <div className="email-card sim-email">
+        <div className="sim-email-header">
+          <div className="sim-avatar">{initials(currentEmail.senderName)}</div>
+          <div className="sim-sender-block">
+            <strong>{currentEmail.senderName}</strong>
+            <span className="sim-sender-address">{currentEmail.senderEmail}</span>
+          </div>
+          <span className="sim-timestamp">{currentEmail.timestamp}</span>
+        </div>
+
+        <h2>{currentEmail.subject}</h2>
+
+        {currentEmail.body.map((paragraph, index) => (
+          <p key={index}>{paragraph}</p>
+        ))}
+
+        {currentEmail.simulatedLink ? (
+          <div className="sim-link" role="note">
+            🔗 {currentEmail.simulatedLink}
+          </div>
+        ) : null}
+
+        {currentEmail.attachment ? (
+          <div className="sim-attachment" role="note">
+            📎 {currentEmail.attachment}
+          </div>
+        ) : null}
+      </div>
+
+      {selected === null ? (
+        <div className="quiz-answers">
+          <button type="button" className="secondary-link" onClick={() => handleAnswer('legitimate')}>
+            Legitimate
+          </button>
+          <button type="button" className="primary-link" onClick={() => handleAnswer('phishing')}>
+            Phishing
+          </button>
+        </div>
+      ) : (
+        <div className={`quiz-feedback ${isCorrect ? 'quiz-feedback-correct' : 'quiz-feedback-incorrect'}`}>
+          <p className="quiz-feedback-result">
+            {isCorrect ? 'Correct!' : 'Not quite.'} This email was{' '}
+            {correctAnswer === 'phishing' ? 'phishing' : 'legitimate'}.
+          </p>
+          <div className="sim-indicator-list">
+            {currentEmail.indicators.map((indicator) => (
+              <span key={indicator} className="tag">
+                {indicator}
+              </span>
+            ))}
+          </div>
+          <p>{currentEmail.explanation}</p>
+          <button type="button" className="primary-link" onClick={handleNext}>
+            {currentIndex + 1 < total ? 'Next email' : 'See final results'}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function App() {
   const [tips, setTips] = useState<Tip[]>(starterTips)
   const [loading, setLoading] = useState(true)
@@ -210,6 +371,8 @@ function App() {
           <a href="#signals">Warning signs</a>
           <a href="#workflow">Quick check</a>
           <a href="#quiz">Take the quiz</a>
+          <a href="#simulator">Phishing simulator</a>
+          <a href="#red-flags">Spot the Red Flags</a>
         </nav>
       </header>
 
@@ -290,6 +453,30 @@ function App() {
           <QuizSection />
         </section>
 
+        <section id="simulator" className="simulator section-block">
+          <div className="section-heading">
+            <p className="eyebrow">Interactive simulation</p>
+            <h2>Phishing email simulator</h2>
+            <p className="lead">
+              Review 10 realistic inbox scenarios one at a time. Decide if each is phishing or
+              legitimate before the answer is revealed — messages get progressively harder to spot.
+            </p>
+          </div>
+          <PhishingSimulator />
+        </section>
+
+        <section id="red-flags" className="simulator section-block">
+          <div className="section-heading">
+            <p className="eyebrow">Advanced training</p>
+            <h2>Spot the Red Flags</h2>
+            <p className="lead">
+              Choose a difficulty level, then click directly on the parts of each email you believe are
+              suspicious. Find every red flag to complete the scenario — hints and reveals are available if
+              you get stuck.
+            </p>
+          </div>
+          <SpotTheRedFlags />
+        </section>
         <section className="community section-block">
           <div className="section-heading">
             <p className="eyebrow">Shared notes</p>
