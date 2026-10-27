@@ -68,7 +68,7 @@ const navigationItems = [
   { id: 'quiz', label: 'Quiz', href: '#quiz' },
   { id: 'simulator', label: 'Phishing simulator', href: '#simulator' },
   { id: 'red-flags', label: 'Spot the Red Flags', href: '#/red-flags' },
-  { id: 'community', label: 'Community reminders', href: '#community' },
+  { id: 'community', label: 'Community reminders', href: '#/community' },
 ] as const
 
 type NavigationItemId = (typeof navigationItems)[number]['id']
@@ -354,6 +354,7 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [activePage, setActivePage] = useState<NavigationItemId>('home')
   const [isRedFlagsPage, setIsRedFlagsPage] = useState(false)
+  const [isCommunityPage, setIsCommunityPage] = useState(false)
 
   useEffect(() => {
     const loadTips = async () => {
@@ -383,6 +384,7 @@ function App() {
       if (pageId) {
         setActivePage(pageId)
         setIsRedFlagsPage(window.location.hash === '#/red-flags')
+        setIsCommunityPage(window.location.hash === '#/community')
         requestAnimationFrame(() => {
           document.getElementById(pageId)?.scrollIntoView()
         })
@@ -392,7 +394,7 @@ function App() {
     updateActivePageFromHash()
     window.addEventListener('hashchange', updateActivePageFromHash)
 
-    if (isRedFlagsPage) {
+    if (isRedFlagsPage || isCommunityPage) {
       return () => {
         window.removeEventListener('hashchange', updateActivePageFromHash)
       }
@@ -422,7 +424,7 @@ function App() {
       window.removeEventListener('hashchange', updateActivePageFromHash)
       observer.disconnect()
     }
-  }, [isRedFlagsPage])
+  }, [isRedFlagsPage, isCommunityPage])
 
   return (
     <div className="app-shell">
@@ -459,6 +461,28 @@ function App() {
               </p>
             </div>
             <SpotTheRedFlags />
+          </section>
+        ) : isCommunityPage ? (
+          <section id="community" className="community section-block">
+            <div className="section-heading">
+              <p className="eyebrow">Shared notes</p>
+              <h1>Community reminders</h1>
+            </div>
+
+            {loading ? <p className="loading">Loading examples...</p> : null}
+
+            <div className="tip-list">
+              {tips.map((tip) => (
+                <article key={tip.id} className="tip-item">
+                  <span className="tag">{tip.category}</span>
+                  <h3>{tip.title}</h3>
+                  <p>{tip.summary}</p>
+                  <strong>Next step</strong>
+                  <p>{tip.nextStep}</p>
+                  {tip.author ? <small>Shared by {tip.author}</small> : null}
+                </article>
+              ))}
+            </div>
           </section>
         ) : (
           <>
@@ -568,27 +592,6 @@ function App() {
               </div>
             </section>
 
-            <section id="community" className="community section-block">
-          <div className="section-heading">
-            <p className="eyebrow">Shared notes</p>
-            <h2>Community reminders</h2>
-          </div>
-
-          {loading ? <p className="loading">Loading examples...</p> : null}
-
-          <div className="tip-list">
-            {tips.map((tip) => (
-              <article key={tip.id} className="tip-item">
-                <span className="tag">{tip.category}</span>
-                <h3>{tip.title}</h3>
-                <p>{tip.summary}</p>
-                <strong>Next step</strong>
-                <p>{tip.nextStep}</p>
-                {tip.author ? <small>Shared by {tip.author}</small> : null}
-              </article>
-            ))}
-          </div>
-            </section>
           </>
         )}
       </main>
