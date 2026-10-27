@@ -63,6 +63,21 @@ const steps = [
   'Report the message and delete it if it looks suspicious.',
 ]
 
+const navigationItems = [
+  { id: 'home', label: 'Home', href: '#home' },
+  { id: 'quiz', label: 'Quiz', href: '#quiz' },
+  { id: 'simulator', label: 'Phishing simulator', href: '#simulator' },
+  { id: 'red-flags', label: 'Spot the Red Flags', href: '#/red-flags' },
+  { id: 'community', label: 'Community reminders', href: '#community' },
+] as const
+
+type NavigationItemId = (typeof navigationItems)[number]['id']
+
+function getNavigationItemId(hash: string): NavigationItemId | null {
+  const pageId = hash.replace(/^#\/?/, '') as NavigationItemId
+  return navigationItems.some((item) => item.id === pageId) ? pageId : null
+}
+
 function QuizSection() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [score, setScore] = useState(0)
@@ -337,6 +352,8 @@ function PhishingSimulator() {
 function App() {
   const [tips, setTips] = useState<Tip[]>(starterTips)
   const [loading, setLoading] = useState(true)
+  const [activePage, setActivePage] = useState<NavigationItemId>('home')
+  const [isRedFlagsPage, setIsRedFlagsPage] = useState(false)
 
   useEffect(() => {
     const loadTips = async () => {
@@ -360,24 +377,92 @@ function App() {
     void loadTips()
   }, [])
 
+  useEffect(() => {
+    const updateActivePageFromHash = () => {
+      const pageId = getNavigationItemId(window.location.hash)
+      if (pageId) {
+        setActivePage(pageId)
+        setIsRedFlagsPage(window.location.hash === '#/red-flags')
+        requestAnimationFrame(() => {
+          document.getElementById(pageId)?.scrollIntoView()
+        })
+      }
+    }
+
+    updateActivePageFromHash()
+    window.addEventListener('hashchange', updateActivePageFromHash)
+
+    if (isRedFlagsPage) {
+      return () => {
+        window.removeEventListener('hashchange', updateActivePageFromHash)
+      }
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleSection = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+
+        if (visibleSection) {
+          setActivePage(visibleSection.target.id as NavigationItemId)
+        }
+      },
+      { rootMargin: '-20% 0px -65%', threshold: [0.01, 0.5] },
+    )
+
+    navigationItems.filter(({ id }) => id !== 'red-flags').forEach(({ id }) => {
+      const section = document.getElementById(id)
+      if (section) {
+        observer.observe(section)
+      }
+    })
+
+    return () => {
+      window.removeEventListener('hashchange', updateActivePageFromHash)
+      observer.disconnect()
+    }
+  }, [isRedFlagsPage])
+
   return (
     <div className="app-shell">
       <header className="topbar">
-        <div className="brand">
+        <a className="brand" href="#home" onClick={() => setActivePage('home')}>
           <span className="brand-mark">⚠</span>
           PhishSafe
-        </div>
+        </a>
         <nav className="nav-links" aria-label="Main navigation">
-          <a href="#signals">Warning signs</a>
-          <a href="#workflow">Quick check</a>
-          <a href="#quiz">Take the quiz</a>
-          <a href="#simulator">Phishing simulator</a>
-          <a href="#red-flags">Spot the Red Flags</a>
+          {navigationItems.map((item) => (
+            <a
+              key={item.id}
+              href={item.href}
+              className={activePage === item.id ? 'is-active' : undefined}
+              aria-current={activePage === item.id ? 'page' : undefined}
+              onClick={() => setActivePage(item.id)}
+            >
+              {item.label}
+            </a>
+          ))}
         </nav>
       </header>
 
       <main className="content">
-        <section className="hero">
+        {isRedFlagsPage ? (
+          <section id="red-flags" className="red-flags-page section-block">
+            <div className="section-heading">
+              <p className="eyebrow">Advanced training</p>
+              <h1>Spot the Red Flags</h1>
+              <p className="lead">
+                Choose a difficulty level, then click directly on the parts of each email you believe are
+                suspicious. Find every red flag to complete the scenario — hints and reveals are available if
+                you get stuck.
+              </p>
+            </div>
+            <SpotTheRedFlags />
+          </section>
+        ) : (
+          <>
+            <section id="home" className="hero">
           <div className="hero-copy">
             <p className="eyebrow">Recognize phishing before it reaches you</p>
             <h1>Know the warning signs of a scam email.</h1>
@@ -412,9 +497,9 @@ function App() {
               <li>Requests account credentials via a link.</li>
             </ul>
           </div>
-        </section>
+            </section>
 
-        <section id="signals" className="signals section-block">
+            <section id="signals" className="signals section-block">
           <div className="section-heading">
             <p className="eyebrow">Common signals</p>
             <h2>What makes an email suspicious?</h2>
@@ -428,9 +513,9 @@ function App() {
               </article>
             ))}
           </div>
-        </section>
+            </section>
 
-        <section id="workflow" className="workflow section-block">
+            <section id="workflow" className="workflow section-block">
           <div className="section-heading">
             <p className="eyebrow">Simple workflow</p>
             <h2>Use this quick check before you act.</h2>
@@ -443,17 +528,17 @@ function App() {
               </div>
             ))}
           </div>
-        </section>
+            </section>
 
-        <section id="quiz" className="quiz section-block">
+            <section id="quiz" className="quiz section-block">
           <div className="section-heading">
             <p className="eyebrow">Test what you learned</p>
             <h2>Can you spot the phishing email?</h2>
           </div>
           <QuizSection />
-        </section>
+            </section>
 
-        <section id="simulator" className="simulator section-block">
+            <section id="simulator" className="simulator section-block">
           <div className="section-heading">
             <p className="eyebrow">Interactive simulation</p>
             <h2>Phishing email simulator</h2>
@@ -463,21 +548,27 @@ function App() {
             </p>
           </div>
           <PhishingSimulator />
-        </section>
+            </section>
 
-        <section id="red-flags" className="simulator section-block">
-          <div className="section-heading">
-            <p className="eyebrow">Advanced training</p>
-            <h2>Spot the Red Flags</h2>
-            <p className="lead">
-              Choose a difficulty level, then click directly on the parts of each email you believe are
-              suspicious. Find every red flag to complete the scenario — hints and reveals are available if
-              you get stuck.
-            </p>
-          </div>
-          <SpotTheRedFlags />
-        </section>
-        <section className="community section-block">
+            <section className="red-flags-cta section-block">
+              <div className="quiz-card quiz-intro">
+                <p className="eyebrow">Advanced training</p>
+                <h2>Find every red flag in realistic phishing emails.</h2>
+                <p>
+                  Put your skills to the test with progressive scenarios, optional hints, and detailed
+                  explanations for every suspicious element.
+                </p>
+                <a
+                  className="primary-link"
+                  href="#/red-flags"
+                  onClick={() => setActivePage('red-flags')}
+                >
+                  Start Spot the Red Flags
+                </a>
+              </div>
+            </section>
+
+            <section id="community" className="community section-block">
           <div className="section-heading">
             <p className="eyebrow">Shared notes</p>
             <h2>Community reminders</h2>
@@ -497,7 +588,9 @@ function App() {
               </article>
             ))}
           </div>
-        </section>
+            </section>
+          </>
+        )}
       </main>
     </div>
   )
